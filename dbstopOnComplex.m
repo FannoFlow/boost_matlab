@@ -13,7 +13,7 @@ function dbstopOnComplex(val)
 %
 %  a = 1;
 %  b = 1i;
-%  dbStopOnComplex(a,b)
+%  dbstopOnComplex(a,b)
 
 % Copyright 2020 David Coventry
 
