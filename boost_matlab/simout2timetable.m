@@ -37,17 +37,23 @@ end
 boost.validation.mustHaveToutWithYout(simout, NameValueArgs.TimeSaveName, NameValueArgs.OutputSaveName);
 
 simvars = simout.who;
+timetables = {};
 
 if any(simvars == NameValueArgs.OutputSaveName)
-    baseTT = constructTimeTableFromNumericTimeVector(simout.(NameValueArgs.TimeSaveName), simout.(NameValueArgs.OutputSaveName));
-else
-    baseTT = timetable;
+    timetables = [timetables, {constructTimeTableFromNumericTimeVector(simout.(NameValueArgs.TimeSaveName), simout.(NameValueArgs.OutputSaveName))}];
 end
 
-sigsTT = arrayfun(@(n) sig2tt(simout.sigsOut{n}),1:simout.sigsOut.numElements, "UniformOutput",false);
+if any(simvars == NameValueArgs.SignalLoggingName)
+    sigsTT = arrayfun(@(n) sig2tt(simout.sigsOut{n}),1:simout.sigsOut.numElements, "UniformOutput",false);
+    timetables = [timetables, sigsTT{:}];
+end
 
-tt = synchronize(baseTT,sigsTT{:});
-
+% final step, synchronize all of the timetables
+if ~isempty(timetables)
+    tt = synchronize(timetables{:});
+else
+    tt = timetable;
+end
 end
 
 function tt = sig2tt(sig)
