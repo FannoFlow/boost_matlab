@@ -33,19 +33,21 @@ if NameValueArgs.RetrieveFromModel
     end
 end
 
-% post-arguments validation
-boost.validation.mustHaveToutWithYout(simout, NameValueArgs.TimeSaveName, NameValueArgs.OutputSaveName);
-
+% initialization
 simvars = simout.who;
 timetables = {};
 
+% post-arguments validation
+boost.validation.mustHaveToutWithYout(simout, NameValueArgs.TimeSaveName, NameValueArgs.OutputSaveName);
+
 if any(simvars == NameValueArgs.OutputSaveName)
-    timetables = [timetables, {constructTimeTableFromNumericTimeVector(simout.(NameValueArgs.TimeSaveName), simout.(NameValueArgs.OutputSaveName))}];
+    outputTT = constructTimeTable(simout.(NameValueArgs.TimeSaveName), simout.(NameValueArgs.OutputSaveName));
+    timetables = appendTimeTable(timetables, outputTT);
 end
 
 if any(simvars == NameValueArgs.SignalLoggingName)
-    sigsTT = arrayfun(@(n) sig2tt(simout.sigsOut{n}),1:simout.sigsOut.numElements, "UniformOutput",false);
-    timetables = [timetables, sigsTT{:}];
+    sigsTT = constructTimeTableFromDataset(simout.(NameValueArgs.SignalLoggingName));
+    timetables = appendTimeTable(timetables, sigsTT);
 end
 
 % final step, synchronize all of the timetables
@@ -56,12 +58,12 @@ else
 end
 end
 
-function tt = sig2tt(sig)
-tt = constructTimeTableFromNumericTimeVector(sig.Values.Time,sig.Values.Data);
-if sig.Name == "" % unammed signal
-    % extract the name from the signal port and index
-    tt.Properties.VariableNames = sig.PortType + "_" + sig.PortIndex;
+function timetables = appendTimeTable(timetables, newtables)
+if iscell(newtables)
+    timetables = [timetables, newtables];
 else
-    tt.Properties.VariableNames = sig.Name;
+    timetables = [timetables, {newtables}];
 end
 end
+
+
