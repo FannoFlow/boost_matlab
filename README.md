@@ -5,10 +5,14 @@ Helpful additions to the MATLAB product
 
 # methods
 dbstopOnComplex
+
 simout2timetable
+
 timeseries2timetable
+
 boost.bench
 
 # packages
 boost.bench
+
 boost.validation
