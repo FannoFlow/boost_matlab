@@ -25,9 +25,9 @@ classdef bench
             %BENCH Construct an instance of this class
             %   Detailed explanation goes here
             arguments
-                n (1,1) {mustBeInteger, mustBeGreaterThan(n, 0)}
+                n (1,1) {mustBeInteger, mustBeGreaterThan(n, 0)} = 1
                 NameValues.Benchmark (1,1) string {mustBeMember(NameValues.Benchmark, ...
-                    ["Single", "Multi", "VDP"])} = "multi";
+                    ["Single", "Multi", "VDP"])} = "Multi";
             end
             
             info = boost.bench.cpuinfo();
